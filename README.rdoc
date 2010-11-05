@@ -1,4 +1,4 @@
-= zendesk_remote_authentication
+= Zendesk Remote Authentication
 
 Description goes here.
 
