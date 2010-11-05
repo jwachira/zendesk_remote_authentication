@@ -37,7 +37,7 @@ module RemoteAuthenticationHelper
       auth_params = [
         '?name='      + CGI.escape(name),
         '&email='     + CGI.escape(email),
-        '&timestamp=' + now,
+        '&timestamp=' + timestamp,
         '&hash='      + hash,
         '&return_to=' + back
       ].join
