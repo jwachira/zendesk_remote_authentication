@@ -7,12 +7,12 @@ module Zendesk
       attr_writer :auth_url, :token
       
       def token
-        raise ArgumentError.new('Set your Zendesk token with. Zendesk::RemoteAuthentication.token = <token>') unless @token
+        raise ArgumentError.new('Zendesk Token has not been set yet. Set with Zendesk::RemoteAuthentication.token = <token>') unless @token
         @token
       end
   
       def auth_url
-        raise ArgumentError.new('Set your Zendesk authentication url with, Zendesk::RemoteAuthentication.auth_url = <token>') unless @auth_url
+        raise ArgumentError.new('Zendesk authentication url has not been set yet. Set with Zendesk::RemoteAuthentication.auth_url = <token>') unless @auth_url
         @auth_url
       end
       
@@ -22,28 +22,31 @@ module Zendesk
 end
 
 module RemoteAuthenticationHelper
-
+   #you can either pass username and email or a user object which contains email and username attributes
    def zendesk_remote_authentication_url(params)
-      raise ArgumentError.new("You must provide name and email address") unless (params[:name] && params[:email])
-      
-      token       = Zendesk::RemoteAuthentication.token
-      timestamp   = params[:timestamp] || Time.now.to_i.to_s
-      name        = params[:name]
-      email       = params[:email]
-      external_id = params[:external_id]
-      hash        = Digest::MD5.hexdigest(name + email + external_id + token + timestamp)
-      back        = params[:return_to]
+     params = params.is_a?(Hash) ? params : convert_user_to_a_hash(params)
 
-      auth_params = [
-        '?name='      + CGI.escape(name),
-        '&email='     + CGI.escape(email),
-        '&timestamp=' + timestamp,
-        '&hash='      + hash,
-        '&return_to=' + back
-      ].join
+     #TODO: Need a class to validate the params
+     raise ArgumentError.new("You must provide name and email address") unless (params[:name] && params[:email])
 
-      Zendesk::RemoteAuthentication.auth_url + auth_params
-    
+     #add timestamp if none is passed in the params  
+     params[:timestamp] = Time.now.utc.to_i unless params[:timestamp]
+
+     params[:hash] = params[:external_id] ? generate_authentication_hash(Zendesk::RemoteAuthentication.token, params) : ''
+
+     "#{Zendesk::RemoteAuthentication.auth_url}?#{params.to_query}"
   end
-
+  
+  def convert_user_to_a_hash(user)
+    params = {}
+    params[:name]  = "#{user.first_name} #{user.last_name}"
+    params[:email] = user.email
+    params[:external_id] = user.id
+    return params
+  end
+  
+  def generate_authentication_hash(token, params)
+    Digest::MD5.hexdigest(params[:name] + params[:email] + params[:external_id] + token + params[:timestamp])
+  end
+  
 end
