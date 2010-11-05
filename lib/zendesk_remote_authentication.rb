@@ -31,7 +31,7 @@ module RemoteAuthenticationHelper
       name        = params[:name]
       email       = params[:email]
       external_id = params[:external_id]
-      hash        = Digest::MD5.hexdigest(name + email + external_id + token + now)
+      hash        = Digest::MD5.hexdigest(name + email + external_id + token + timestamp)
       back        = params[:return_to]
 
       auth_params = [
