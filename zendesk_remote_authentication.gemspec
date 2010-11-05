@@ -25,7 +25,8 @@ Gem::Specification.new do |s|
      "VERSION",
      "lib/zendesk_remote_authentication.rb",
      "test/helper.rb",
-     "test/test_zendesk_remote_authentication.rb"
+     "test/test_zendesk_remote_authentication.rb",
+     "zendesk_remote_authentication.gemspec"
   ]
   s.homepage = %q{http://github.com/jwachira/zendesk_remote_authentication}
   s.rdoc_options = ["--charset=UTF-8"]
