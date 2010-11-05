@@ -29,7 +29,7 @@ module RemoteAuthenticationHelper
       token       = Zendesk::RemoteAuthentication.token
       timestamp   = params[:timestamp] || Time.now.to_i.to_s
       name        = params[:name]
-      email       = params[:email].force_utf8
+      email       = params[:email]
       external_id = params[:external_id]
       hash        = Digest::MD5.hexdigest(name + email + external_id + token + now)
       back        = params[:return_to]
@@ -40,7 +40,7 @@ module RemoteAuthenticationHelper
         '&timestamp=' + now,
         '&hash='      + hash,
         '&return_to=' + back
-      ].join.force_utf8
+      ].join
 
       Zendesk::RemoteAuthentication.auth_url + auth_params
     
